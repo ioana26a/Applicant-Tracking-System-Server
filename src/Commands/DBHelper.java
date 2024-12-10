@@ -50,7 +50,7 @@ public final class DBHelper {
                                         // Utilizatorul este adaugat in map daca a gresit parola si cand se ajunge la
                                         // 3 incercari se blocheaza utilizatorul
                                         attemptCounter.remove(user);
-                                        return "Succes";
+                                        return "Success";
                                 } else {
                                         incrementAttempts(user);
                                         return "Parola incorecta.Incercari ramase: " + (MAX_ATTEMPTS - attemptCounter.get(user));
