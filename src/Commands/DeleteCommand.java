@@ -1,5 +1,7 @@
 package Commands;
 
+import Helper.DBHelper;
+
 import java.io.PrintWriter;
 
 public class DeleteCommand implements Command {
