@@ -1,3 +1,5 @@
+package ServerUtilities;
+
 import Commands.Command;
 import Commands.CommandFactory;
 
@@ -7,7 +9,6 @@ import java.net.Socket;
 public class ServerThread extends Thread {
 
         private final Socket socket;
-
         public ServerThread(Socket socket) {
                 this.socket = socket;
         }
@@ -21,14 +22,16 @@ public class ServerThread extends Thread {
                 ) {
                         String text;
                         while ((text = reader.readLine()) != null) {
-                                System.out.println("Received: " + text);
+                                Server.log.append("Received from client: " + text + "\n");
+                                if (text.equalsIgnoreCase("disconnect_client")) {
+                                        Server.log.append("Clientul " + socket.getPort() + " s-a deconectat.\n");
+                                        break;
+                                }
                                 Command command = CommandFactory.createCommand(text);
                                 if (command != null) {
                                         command.execute(writer);
-                                        if (text.equalsIgnoreCase("disconnect_client")) {
-                                                break;
-                                        }
                                 } else {
+                                        Server.log.append("Received from client: Unknown command: " + text + "\n");
                                         writer.println("Unknown command: " + text);
                                 }
                         }

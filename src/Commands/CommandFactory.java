@@ -22,7 +22,7 @@ public class CommandFactory {
                                 id = Integer.parseInt(parts[2]);
                         } catch (NumberFormatException e) {
                                 System.err.println("ID invalid: " + parts[2]);
-                                return null;  //ID-ul nu este valid
+                                return null;
                         }
                         return new DeleteCommand(entity, id);
                 }

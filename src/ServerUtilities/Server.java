@@ -1,3 +1,5 @@
+package ServerUtilities;
+
 import Helper.DBHelper;
 
 import javax.swing.*;
@@ -10,6 +12,7 @@ import java.util.concurrent.Executors;
 public class Server {
         private static volatile boolean isRunning = false;
         private static ServerSocket serverSocket;
+        public static JTextArea log;
         private static final int PORT = 1234;
 
         public static void main(String[] args) {
@@ -58,9 +61,9 @@ public class Server {
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setLayout(null);
 
-                JTextArea logArea = new JTextArea();
-                logArea.setEditable(false);
-                JScrollPane scrollPane = new JScrollPane(logArea);
+                log = new JTextArea();
+                log.setEditable(false);
+                JScrollPane scrollPane = new JScrollPane(log);
                 scrollPane.setBounds(20, 20, 550, 200);
                 frame.add(scrollPane);
 
@@ -86,22 +89,22 @@ public class Server {
                                 executor.execute(() -> startServer(PORT));
                                 executor.shutdown();
                                 statusLabel.setText("Server Status: Pornit");
-                                logArea.append("Server pornit...\n");
+                                log.append("Server pornit...\n");
                         } else {
-                                logArea.append("Serverul este deja pornit!\n");
+                                log.append("Serverul este deja pornit!\n");
                         }
                 });
                 stopButton.addActionListener(e -> {
                         if (isRunning) {
                                 stopServer();
                                 statusLabel.setText("Server Status: Oprit");
-                                logArea.append("Server oprit.\n");
+                                log.append("Server oprit.\n");
                         } else {
-                                logArea.append("Serverul este deja oprit!\n");
+                                log.append("Serverul este deja oprit!\n");
                         }
                 });
 
-                clearButton.addActionListener(e -> logArea.setText(""));
+                clearButton.addActionListener(e -> log.setText(""));
                 frame.setVisible(true);
         }
 }

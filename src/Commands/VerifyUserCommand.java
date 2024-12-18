@@ -1,8 +1,10 @@
 package Commands;
 
 import Helper.DBHelper;
+import ServerUtilities.Server;
 
 import java.io.PrintWriter;
+
 
 public class VerifyUserCommand implements Command{
         private final String user;
@@ -15,6 +17,6 @@ public class VerifyUserCommand implements Command{
         public void execute(PrintWriter writer) {
                 String response = DBHelper.verifyUser(user,password);
                 writer.println(response);
-                System.out.println(response);
+                Server.log.append(response + "\n");
         }
 }
