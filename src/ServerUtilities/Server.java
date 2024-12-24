@@ -4,8 +4,11 @@ import Helper.DBHelper;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,7 +17,7 @@ public class Server {
         private static ServerSocket serverSocket;
         public static JTextArea log;
         private static final int PORT = 1234;
-
+        private static List<Socket> clients = new ArrayList<>();
         public static void main(String[] args) {
                 show();
         }
@@ -22,12 +25,13 @@ public class Server {
                 isRunning = true;
                 try {
                         serverSocket = new ServerSocket(port);
-                        System.out.println("Server is listening on port " + port);
+                        log.append("Server is listening on port " + port + "\n");
                         DBHelper.connect();
                         while (isRunning) {
                                 try {
                                         Socket socket = serverSocket.accept();
-                                        System.out.println("New client connected: " + socket.getPort());
+                                        clients.add(socket);
+                                        log.append("New client connected: " + socket.getPort() + "\n");
                                         new ServerThread(socket).start();
                                 } catch (IOException e) {
                                         if (isRunning) {
@@ -48,15 +52,26 @@ public class Server {
                 isRunning = false;
                 if (serverSocket != null && !serverSocket.isClosed()) {
                         try {
+                                if(!clients.isEmpty()){
+                                        for (Socket clientSocket : clients) {
+                                                try {
+                                                        OutputStream out = clientSocket.getOutputStream();
+                                                        out.write("Server is shutting down. Goodbye!\n".getBytes());
+                                                        out.flush();
+                                                } catch (IOException e) {
+                                                        System.err.println("Error sending shutdown message to client: " + e.getMessage());
+                                                }
+                                        }
+                                }
                                 serverSocket.close();
-                                System.out.println("Server stopped.");
+                                log.append("Server stopped.");
                         } catch (IOException e) {
                                 System.err.println("Error closing server socket: " + e.getMessage());
                         }
                 }
         }
         public static void show() {
-                JFrame frame = new JFrame("Server Control Panel");
+                JFrame frame = new JFrame("Server Control");
                 frame.setSize(600, 400);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setLayout(null);

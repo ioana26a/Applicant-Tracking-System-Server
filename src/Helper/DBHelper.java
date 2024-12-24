@@ -34,8 +34,6 @@ public final class DBHelper {
                 }
         }
         public static String verifyUser(String user, String password){
-                // TODO daca nu gaseste intoarce un mesaj specific si blocheaza userul de la accesul in aplicatie
-                // cauta in bd user si parola + limitarea numarului de incercari
                 String query = """
                         SELECT utilizator,parola FROM UTILIZATORI WHERE UTILIZATOR = ?
                         """;
@@ -50,7 +48,7 @@ public final class DBHelper {
                                         // Utilizatorul este adaugat in map daca a gresit parola si cand se ajunge la
                                         // 3 incercari se blocheaza utilizatorul
                                         attemptCounter.remove(user);
-                                        return "Success";
+                                        return "autentificare cu succes";
                                 } else {
                                         incrementAttempts(user);
                                         return "Parola incorecta.Incercari ramase: " + (MAX_ATTEMPTS - attemptCounter.get(user));
@@ -99,7 +97,7 @@ public final class DBHelper {
                 }
         }
         public static JSONArray selectAllCandidates() {
-                String sql = "SELECT * FROM candidati";
+                String sql = "SELECT * FROM info_candidati";
                 JSONArray candidatesArray = new JSONArray();
                 try (Statement stmt = connection.createStatement();
                      ResultSet rs = stmt.executeQuery(sql)) {
@@ -112,12 +110,12 @@ public final class DBHelper {
                                 candidate.put("email", rs.getString("email"));
                                 candidate.put("cv", rs.getString("cv"));
                                 candidate.put("sursa", rs.getString("sursa"));
-                                candidate.put("lista_neagra", rs.getString("lista_neagra"));
-                                candidate.put("id_recruiter", rs.getString("id_recruiter"));
-                                candidate.put("id_status", rs.getString("id_status"));
-                                candidate.put("id_oras", rs.getString("id_oras"));
+                                candidate.put("lista_neagra", rs.getBoolean("lista_neagra"));
+                                candidate.put("recrutor", rs.getString("recrutor"));
+                                candidate.put("status", rs.getString("status"));
+                                candidate.put("oras", rs.getString("oras"));
                                 candidate.put("strada", rs.getString("strada"));
-                                candidate.put("numar", rs.getString("numar"));
+                                candidate.put("numar", rs.getInt("numar"));
                                 candidatesArray.put(candidate);
                         }
                 } catch (SQLException e) {
