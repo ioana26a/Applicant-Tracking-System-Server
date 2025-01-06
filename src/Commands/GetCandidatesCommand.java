@@ -11,7 +11,7 @@ public class GetCandidatesCommand implements Command {
                 JSONArray candidates = DBHelper.selectAllCandidates();
                 if (candidates.length() > 0) {
                         writer.println("Candidates: " + candidates.toString());
-                        Server.log.append(candidates.toString());
+                        Server.log.append(candidates.toString() + "\n");
                 } else {
                         writer.println("No candidates found.");
                 }

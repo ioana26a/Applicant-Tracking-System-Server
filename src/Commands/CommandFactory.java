@@ -9,12 +9,40 @@ public class CommandFactory {
 
         static {
                 commandMap.put("get_candidates", new GetCandidatesCommand());
-                //commandMap.put("add_candidate", new AddCandidateCommand());
+                //commandMap.put("get_vacancies", new GetVacanciesCommand());
+                //commandMap.put("get_applications", new GetVacanciesCommand());
+                //commandMap.put("get_interviews", new GetInterviewsCommand());
+                //commandMap.put("get_clients", new GetClientsCommand());
+                //commandMap.put("get_contacts", new GetContactsCommand());
         }
 
         public static Command createCommand(String input) {
                 String[] parts = input.split(" ");
-
+                if (input.startsWith("Candidat info:")) {
+                        // Extragem JSON-ul din mesaj
+                        String candidateJson = input.substring("Candidat info:".length()).trim();
+                        return new AddCandidateCommand(candidateJson);
+                }
+                if (input.startsWith("CV:")) {
+                        // Extragem informațiile despre fișier
+                        String fileInfo = input.substring("CV:".length()).trim();
+                        String[] fileParts = fileInfo.split("\\|"); // Format așteptat: CV:nume_fisier|dimensiune
+                        if (fileParts.length == 2) {
+                                String fileName = fileParts[0];
+                                int fileSize;
+                                try {
+                                        fileSize = Integer.parseInt(fileParts[1]);
+                                } catch (NumberFormatException e) {
+                                        System.err.println("Dimensiunea fișierului este invalidă: " + fileParts[1]);
+                                        return null;
+                                }
+                                System.out.println("info: " + fileName + fileSize);
+                                return new AddCVCandidateCommand(fileName, fileSize);
+                        } else {
+                                System.err.println("Format invalid pentru comanda CV.");
+                                return null;
+                        }
+                }
                 if (parts.length == 3 && parts[0].equalsIgnoreCase("delete")) {
                         String entity = parts[1];
                         int id = -1;

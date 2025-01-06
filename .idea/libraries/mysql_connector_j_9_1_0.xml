@@ -2,6 +2,7 @@
   <library name="mysql-connector-j-9.1.0">
     <CLASSES>
       <root url="jar://$USER_HOME$/Downloads/mysql-connector-j-9.1.0.jar!/" />
+      <root url="jar://$USER_HOME$/source/repos/RecruitEase/spring-security-core-6.0.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

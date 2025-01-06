@@ -18,6 +18,7 @@ public class Server {
         public static JTextArea log;
         private static final int PORT = 1234;
         private static List<Socket> clients = new ArrayList<>();
+        public static List<String> CVPaths = new ArrayList<>();
         public static void main(String[] args) {
                 show();
         }
@@ -48,6 +49,9 @@ public class Server {
                         stopServer();
                 }
         }
+        public static void clientDisconnected(Socket socket){
+                clients.remove(socket);
+        }
         public static void stopServer() {
                 isRunning = false;
                 if (serverSocket != null && !serverSocket.isClosed()) {
@@ -72,30 +76,30 @@ public class Server {
         }
         public static void show() {
                 JFrame frame = new JFrame("Server Control");
-                frame.setSize(600, 400);
+                frame.setSize(600, 450);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setLayout(null);
 
                 log = new JTextArea();
                 log.setEditable(false);
                 JScrollPane scrollPane = new JScrollPane(log);
-                scrollPane.setBounds(20, 20, 550, 200);
+                scrollPane.setBounds(20, 20, 550, 250);
                 frame.add(scrollPane);
 
                 JLabel statusLabel = new JLabel("Server Status: Oprit");
-                statusLabel.setBounds(20, 230, 200, 25);
+                statusLabel.setBounds(20, 280, 200, 25);
                 frame.add(statusLabel);
 
                 JButton startButton = new JButton("Start Server");
-                startButton.setBounds(20, 270, 150, 30);
+                startButton.setBounds(20, 320, 150, 30);
                 frame.add(startButton);
 
                 JButton stopButton = new JButton("Stop Server");
-                stopButton.setBounds(200, 270, 150, 30);
+                stopButton.setBounds(200, 320, 150, 30);
                 frame.add(stopButton);
 
                 JButton clearButton = new JButton("Clear Logs");
-                clearButton.setBounds(380, 270, 150, 30);
+                clearButton.setBounds(380, 320, 150, 30);
                 frame.add(clearButton);
 
                 startButton.addActionListener(e -> {
