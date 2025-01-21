@@ -16,7 +16,7 @@ public class VerifyUserCommand implements Command{
         @Override
         public void execute(PrintWriter writer) {
                 String response = DBHelper.verifyUser(user,password);
-                writer.println(response);
+                writer.println(response + "\n");
                 Server.log.append(response + "\n");
         }
 }

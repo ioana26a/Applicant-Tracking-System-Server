@@ -16,7 +16,7 @@ public class AddCandidateCommand implements Command {
         @Override
         public void execute(PrintWriter writer) {
                 String raspuns = DBHelper.addCandidate(candidateJson);
-                writer.println(raspuns);
+                writer.println(raspuns + "\n");
                 Server.log.append("Sent to client: " + raspuns + "\n");
         }
 }

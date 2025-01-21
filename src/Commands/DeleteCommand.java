@@ -15,6 +15,6 @@ public class DeleteCommand implements Command {
         public void execute(PrintWriter writer) {
                 //trebuie metoda sa intoarca un mesaj corespunzator. ex inoarce stringul ce trebuie afisat utilizatorului
                 String message = DBHelper.deleteRowFromTable(entity, id);
-                writer.println(message);
+                writer.println(message + "\n");
         }
 }
