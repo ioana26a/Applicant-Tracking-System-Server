@@ -20,6 +20,7 @@ public final class DBHelper {
         private static final int MAX_ATTEMPTS = 3;      //incercarile ramase pentru parola gresita
         private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         private static final Map<String, Integer> attemptCounter = new HashMap<>();
+        private static final String CVPATH = "C:\\Users\\Ioana\\IdeaProjects\\cv-licenta\\";
         public static void connect() {
                 try {
                         if (connection == null || connection.isClosed()) {
@@ -76,36 +77,6 @@ public final class DBHelper {
                 attemptCounter.remove(user);
                 Server.log.append("Blocarea utilizatorului " + user + " a fost ridicată.");
         }
-        //de inlocuit cu json object
-        public static boolean addCandidate(String nume, String prenume, String email, String telefon, String cv, String sursa,
-                                           boolean listaNeagra, int idRecruiter, int idStatus, int idOras, String strada, int numar) {
-                String query = """
-                            INSERT INTO candidati 
-                            (nume, prenume, email, telefon, cv, sursa, lista_neagra, id_recruiter, id_status, id_oras, strada, numar) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """;
-
-                try (PreparedStatement stmt = connection.prepareStatement(query)) {
-                        stmt.setString(1, nume);
-                        stmt.setString(2, prenume);
-                        stmt.setString(3, email);
-                        stmt.setString(4, telefon);
-                        stmt.setString(5, cv);
-                        stmt.setString(6, sursa);
-                        stmt.setBoolean(7, listaNeagra);
-                        stmt.setInt(8, idRecruiter);
-                        stmt.setInt(9, idStatus);
-                        stmt.setInt(10, idOras);
-                        stmt.setString(11, strada);
-                        stmt.setInt(12, numar);
-
-                        stmt.executeUpdate();
-                        return true;
-                } catch (SQLException e) {
-                        e.printStackTrace();
-                        return false;
-                }
-        }
         public static String addCandidate(JSONObject candidateJson){
                 //la atribut cv trebuie salvata calea catre cv pe server
                 //deci mai intai trebuie ca serverul sa primeasca cv ul si mai apoi insereaza in BD candidatul
@@ -115,10 +86,10 @@ public final class DBHelper {
                 String prenume = candidateJson.getString("prenume");
                 String email = candidateJson.getString("email");
                 String telefon = candidateJson.getString("telefon");
-                String cv = "C:\\Users\\Ioana\\IdeaProjects\\cv-licenta";
+                String cv = CVPATH + candidateJson.getString("cv");
                 String sursa = candidateJson.getString("sursa");
                 boolean listaNeagra = candidateJson.getBoolean("lista_neagra");
-                String idRecruiter = candidateJson.getString("recrutor");
+                String idRecrutor = candidateJson.getString("recrutor");
                 String idStatus = candidateJson.getString("status");
                 String idOras = candidateJson.getString("oras");
                 String strada = candidateJson.getString("strada");
@@ -128,7 +99,7 @@ public final class DBHelper {
 
                 String query = """
                             INSERT INTO candidati 
-                            (nume, prenume, email, telefon, cv, sursa, lista_neagra, id_recruiter, id_status, id_oras, strada, numar) 
+                            (nume, prenume, email, telefon, cv, sursa, lista_neagra, id_recrutor, id_status, id_oras, strada, numar) 
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """;
 
@@ -140,7 +111,7 @@ public final class DBHelper {
                         stmt.setString(5, cv);
                         stmt.setString(6, sursa);
                         stmt.setBoolean(7, listaNeagra);
-                        stmt.setString(8, idRecruiter);
+                        stmt.setString(8, idRecrutor);
                         stmt.setString(9, idStatus);
                         stmt.setString(10, idOras);
                         stmt.setString(11, strada);
@@ -183,14 +154,14 @@ public final class DBHelper {
         public static JSONArray selectAllVacancies() {
                 String sql = "SELECT * FROM info_posturi_vacante";
                 JSONArray vacanciesArray = new JSONArray();
-                try (Statement stmt = connection.createStatement();     //de modificat coloanele
+                try (Statement stmt = connection.createStatement();
                      ResultSet rs = stmt.executeQuery(sql)) {
                         while (rs.next()) {
                                 JSONObject vacancy = new JSONObject();
                                 vacancy.put("id", rs.getInt("id"));
-                                vacancy.put("nume_client", rs.getString("nume_client"));
+                                vacancy.put("client", rs.getString("nume_client"));
                                 vacancy.put("manager_client", rs.getString("manager_client"));
-                                vacancy.put("status_post", rs.getString("status_post"));
+                                vacancy.put("status", rs.getString("status_post"));
                                 vacancy.put("industrie", rs.getString("industrie"));
                                 vacancy.put("oras", rs.getString("oras"));
                                 vacancy.put("tip_angajare", rs.getString("tip_angajare"));
@@ -207,7 +178,80 @@ public final class DBHelper {
                 }
                 return vacanciesArray;
         }
-
+        public static JSONArray selectAllApplications() {
+                String sql = "SELECT * FROM info_aplicatii";
+                JSONArray applicationsArray = new JSONArray();
+                try (Statement stmt = connection.createStatement();
+                     ResultSet rs = stmt.executeQuery(sql)) {
+                        while (rs.next()) {
+                                JSONObject application = new JSONObject();
+                                application.put("id", rs.getInt("id"));
+                                application.put("client", rs.getString("client"));
+                                application.put("manager_client", rs.getString("manager_client"));
+                                application.put("titlu", rs.getString("titlu_post"));
+                                application.put("id_post", rs.getInt("id_post"));
+                                application.put("recrutor", rs.getString("recrutor"));
+                                application.put("status", rs.getString("status_aplicatie"));
+                                application.put("candidat", rs.getString("nume_candidat"));
+                                application.put("email", rs.getString("email"));
+                                application.put("telefon", rs.getString("telefon"));
+                                application.put("data", rs.getString("data_creare"));
+                                applicationsArray.put(application);
+                        }
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                }
+                return applicationsArray;
+        }
+        public static JSONArray selectAllClients() {
+                String sql = "SELECT * FROM info_clienti";
+                JSONArray clientsArray = new JSONArray();
+                try (Statement stmt = connection.createStatement();
+                     ResultSet rs = stmt.executeQuery(sql)) {
+                        while (rs.next()) {
+                                JSONObject client = new JSONObject();
+                                client.put("id", rs.getInt("id"));
+                                client.put("denumire", rs.getString("denumire"));
+                                client.put("manager_client", rs.getString("manager_client"));
+                                client.put("oras", rs.getString("oras"));
+                                client.put("industrie", rs.getString("industrie"));
+                                client.put("email", rs.getString("email"));
+                                client.put("telefon", rs.getString("telefon"));
+                                client.put("strada", rs.getString("strada"));
+                                client.put("numar", rs.getString("numar"));
+                                clientsArray.put(client);
+                        }
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                }
+                return clientsArray;
+        }
+        public static JSONArray selectAllInterviews() {
+                String sql = "SELECT * FROM info_interviuri";
+                JSONArray interviewsArray = new JSONArray();
+                try (Statement stmt = connection.createStatement();
+                     ResultSet rs = stmt.executeQuery(sql)) {
+                        while (rs.next()) {
+                                JSONObject interview = new JSONObject();
+                                interview.put("id_aplicatie", rs.getInt("id_aplicatie"));
+                                interview.put("client", rs.getString("client"));
+                                interview.put("recrutor", rs.getString("recrutor"));
+                                interview.put("titlu", rs.getString("titlu_post"));
+                                interview.put("candidat", rs.getString("nume_candidat"));
+                                interview.put("email", rs.getString("email"));
+                                interview.put("telefon", rs.getString("telefon"));
+                                interview.put("locatie", rs.getString("locatie"));
+                                interview.put("link", rs.getString("link"));
+                                interview.put("comentarii", rs.getString("comentarii"));
+                                interview.put("data", rs.getString("data_interviu"));
+                                interview.put("status", rs.getString("status"));
+                                interviewsArray.put(interview);
+                        }
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                }
+                return interviewsArray;
+        }
         private static JSONArray getLookupData(String tableName) {
                 JSONArray jsonArray = new JSONArray();
                 String query = "SELECT * FROM " + tableName;

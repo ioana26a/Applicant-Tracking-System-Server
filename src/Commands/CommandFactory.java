@@ -11,9 +11,9 @@ public class CommandFactory {
                 commandMap.put("get_candidates", new GetCandidatesCommand());
                 commandMap.put("get_lookuptables", new GetLookupTablesCommand());
                 commandMap.put("get_vacancies", new GetVacanciesCommand());
-                //commandMap.put("get_applications", new GetApplicationsCommand());
-                //commandMap.put("get_interviews", new GetInterviewsCommand());
-                //commandMap.put("get_clients", new GetClientsCommand());
+                commandMap.put("get_applications", new GetApplicationsCommand());
+                commandMap.put("get_interviews", new GetInterviewsCommand());
+                commandMap.put("get_clients", new GetClientsCommand());
                 //commandMap.put("get_contacts", new GetContactsCommand());
         }
 
